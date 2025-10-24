@@ -1,0 +1,14 @@
+nmap -v -iL host.txt -p21 --open
+
+nc -vn ip 21 
+USER robot
+PASS robot
+
+nc -vn ip 22
+
+........................................................
+nc testphp.vulnweb.com 80
+HEAD / HTTP/1.1
+Host: testphp.vulnweb.com 
+
+

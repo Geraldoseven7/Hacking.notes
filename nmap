@@ -1,0 +1,11 @@
+nmap -sC -Pn ip 
+
+nmap --script vuln -Pn ip
+
+nmap --script http-enum -Pn www.bancocn.com
+
+nmap --script smb-os-discovery -Pn -p 445 www.bancocn.com
+
+nmap --script ftp-anom -p 21 www.bancocn.com
+
+nmap --script=banner -sV -Pn www.bancocn.com

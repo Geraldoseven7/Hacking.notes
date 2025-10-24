@@ -1,0 +1,15 @@
+site:s3.amazonaws.com "gov"
+
+site:github.com "s3.amazonaws.com" "gov.br"
+...............................................
+s3scanner -bucket solydtest 
+
+aws s3 ls s3://solydtest --no-sign-request
+
+python3 dorks-eye.py
+
+site:github.com "s3.amazonaws.com" "gov.br"
+..................................................
+
+
+

