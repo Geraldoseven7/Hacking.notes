@@ -1,0 +1,74 @@
+# THIS ARE ALL THE STEPS TO SOLVE THE PROBLEM CAUSED BY TOR ON AN DEVICE CONNECTION WHEN IT DEPEND ON TOR'S SERVICE TO BE RUNNING
+
+Para realizar o diagnóstico correto e descobrir por que você não consegue acessar a internet sem o Tor, você deve desativar o serviço Tor antes de executar os comandos de verificação do firewall.
+
+Por favor, desative o Tor e então execute os seguintes comandos no terminal, compartilhando a saída de todos eles:
+
+1.  Verificar o status do UFW (Uncomplicated Firewall):
+    bash
+    sudo ufw status verbose
+    
+
+2.  Verificar as regras do iptables em todas as tabelas:
+    bash
+    sudo iptables -L -n -t filter
+    sudo iptables -L -n -t nat
+    sudo iptables -L -n -t mangle
+    sudo iptables -L -n -t raw
+    sudo iptables -L -n -t security
+    
+
+Isso nos ajudará a ver o que está bloqueando o tráfego quando você não está usando a rede Tor.
+.............................................................................................
+Thanks for the information on the raw and security tables!
+
+Based on what we have so far, the raw and security tables don't appear to be blocking your outgoing traffic, as their default policies are ACCEPT.
+
+The most likely place where the blockage is occurring is in the filter table, specifically in the OUTPUT chain, which is where general traffic blocking rules are typically defined.
+
+You previously provided the output of the command:
+bash
+sudo iptables -L -n -t filter
+
+(This was the second command I requested at the beginning of the investigation, and was provided in Image 4).
+
+Could you please confirm the policy of the OUTPUT chain in the filter table, and if there are any explicit DROP or REJECT rules listed there? This will tell us if the system is configured to deny all outgoing traffic that isn't routed through Tor.
+..............................................................................................
+The previous analysis is a good starting point, but let's clarify a few things and explore some additional possibilities. While the OUTPUT chain being set to ACCEPT should allow outbound traffic, there could still be other iptables rules interfering, or the issue might indeed be routing-related as suggested. However, before diving into routing tables, let's double-check the iptables rules more thoroughly.
+
+First, it's important to understand the interaction between Tor and iptables. Tor often adds rules to iptables to redirect traffic. Disabling the Tor service doesn't necessarily remove those rules.
+
+Here's a more systematic approach to troubleshooting:
+
+1.  Flush iptables rules: This will give us a clean slate. Run the following commands (you'll need sudo):
+
+    bash
+    sudo iptables -F
+    sudo iptables -X
+    sudo iptables -t nat -F
+    sudo iptables -t nat -X
+    sudo iptables -t mangle -F
+    sudo iptables -t mangle -X
+    sudo iptables -P INPUT ACCEPT
+    sudo iptables -P FORWARD ACCEPT
+    sudo iptables -P OUTPUT ACCEPT
+    
+
+    This sequence first flushes all rules from all tables (filter, nat, mangle) and then deletes any custom chains. Finally, it sets the default policy for all chains in the filter table to ACCEPT.
+
+2.  Test ping again: After flushing the rules, try ping google.com again without Tor running. If it works now, it means the problem was definitely an iptables rule left over from Tor or some other configuration.
+
+3.  If ping still fails: If ping still doesn't work after flushing iptables, then the problem is more likely related to routing or DNS. In that case, the ip route show command suggested previously is a good next step. Also, check your DNS settings.
+
+4.  Check DNS resolution: Try nslookup google.com. If this fails, the problem is DNS resolution, not necessarily routing or iptables. Check your /etc/resolv.conf file to see which DNS servers are being used. You can temporarily try using Google's public DNS servers by adding the following lines to /etc/resolv.conf:
+
+    
+    nameserver 8.8.8.8
+    nameserver 8.8.4.4
+    
+
+    Important: Modifying /etc/resolv.conf directly might not be persistent across reboots, depending on your system's configuration (e.g., if you're using resolvconf or systemd-resolved).
+
+5.  If DNS resolution works, but ping by name fails: Try pinging Google's IP address directly: ping 8.8.8.8. If this works, but ping google.com doesn't, it still points to a DNS issue, even if nslookup works. It could be a caching problem. Try restarting the nscd service (if it's running) or flushing the DNS cache.
+
+Let me know the results of each of these steps, and we can narrow down the problem further.
